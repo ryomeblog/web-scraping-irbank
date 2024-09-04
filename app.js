@@ -47,10 +47,16 @@ async function writeCsv(data) {
       { id: "dividendYield", title: "配当利回り" },
       { id: "pbr", title: "PBR" },
     ],
+    encoding: 'utf8'
   });
 
   await csvWriter.writeRecords(data);
+
+  // BOMを追加するためにファイルを再度読み込み、BOM付きで書き直す
+  const csvContent = fs.readFileSync(fileName, 'utf8');
+  fs.writeFileSync(fileName, '\uFEFF' + csvContent, 'utf8');
 }
+
 
 function loadSymbolsFromJson() {
   const filePath = path.join(__dirname, "symbols.json");
