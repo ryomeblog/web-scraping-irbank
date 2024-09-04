@@ -50,7 +50,6 @@ async function writeCsv(data) {
   });
 
   await csvWriter.writeRecords(data);
-  console.log("CSVファイルにデータを書き込みました。");
 }
 
 function loadSymbolsFromJson() {
@@ -68,14 +67,19 @@ function loadSymbolsFromJson() {
 async function main() {
   const symbols = loadSymbolsFromJson();
   const stockData = [];
+  const totalSymbols = symbols.length;
 
-  for (const symbol of symbols) {
+  for (let i = 0; i < totalSymbols; i++) {
+    const symbol = symbols[i];
     const data = await getStockData(symbol);
     if (data) {
       stockData.push(data);
     }
+    const progress = ((i + 1) / totalSymbols) * 100;
+    process.stdout.write(`進捗状況: ${progress.toFixed(2)}%\r`);
   }
   await writeCsv(stockData);
+  console.log("\n全ての処理が完了しました。");
 }
 
 main();
